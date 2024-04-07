@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Login </title>
+    <link rel="stylesheet" href="index.css">
+</head>
+
+<body>
+    <div class="main">
+        <h1>Login to Quizz App</h1>
+        <h3>Enter your login credentials</h3>
+        <p style="color: red;" id="alert"></p>
+        <form action="">
+            <label for="first">
+                Username:
+            </label>
+            <input type="text" id="name" name="first" placeholder="Enter your Username" required>
+
+            <label for="password">
+                Password:
+            </label>
+            <input type="password" id="password" name="password" placeholder="Enter your Password" required>
+
+            <div class="wrap">
+                <button type="button" onclick="login()">
+                    Submit
+                </button>
+            </div>
+        </form>
+    </div>
+
+
+<script>
+    function login() {
+            const userName = document.getElementById('name').value;
+            const password = document.getElementById('password').value;
+            if(!userName || !password){
+                 document.getElementById('alert').innerHTML = "Enter username and password";
+                 return;
+            }
+            const data = JSON.stringify({
+                "username": userName,
+                "password": password
+            });
+
+            const xhr = new XMLHttpRequest();
+            xhr.withCredentials = true;
+
+            xhr.addEventListener("readystatechange", function () {
+                if (this.readyState === this.DONE) {
+                    const responseData = JSON.parse(this.responseText);
+                    if (this.status === 200) {
+                        if (responseData.redirectUrl) {
+                            //Login successful
+                            window.location.href = responseData.redirectUrl;
+                        }  
+                    } else {
+                        //Invalid credentials
+                        console.log("Error:", this.status, responseData.response);
+                        document.getElementById('alert').innerHTML = responseData.response;
+                        
+
+                    }
+                }
+            });
+
+            xhr.open("POST", "http://127.0.0.1:3000/login");
+            xhr.setRequestHeader("Accept", "*/*");
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            xhr.send(data);
+        }
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f4f4f4;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.question {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.question h2 {
+    margin-top: 0;
+}
+
+.option {
+    display: block;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.option.correct {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
+.option.selected {
+    background-color: #2196F3;
+    color: #fff;
+}
+
+.option.incorrect {
+    background-color: #F44336;
+    color: #fff;
+}
+
+.score {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Quiz Result</h1>
+        <div id="quiz-result"></div>
+    </div>
+    <script >// Fetch the quiz data from the API endpoint
+        fetch('/res')
+            .then(response => response.json())
+            .then(result => {
+                // Initialize the quiz
+                if (result.result) {
+                    console.log(result.result);
+                    displayNoQuizAttempt(result.result);
+                } else {
+                    console.log(result);
+                       displayQuizResult(result);
+                }
+            
+            });
+
+
+        // Function to display the quiz result
+        function displayQuizResult(quizData) {
+            const quizResultElement = document.getElementById('quiz-result');
+
+            quizData.questions.forEach(question => {
+                const questionElement = document.createElement('div');
+                questionElement.classList.add('question');
+
+                const questionText = document.createElement('h2');
+                questionText.textContent = question.question;
+                questionElement.appendChild(questionText);
+
+                const options = [
+                    { id: question.option_1_id, text: question.option_1 },
+                    { id: question.option_2_id, text: question.option_2 },
+                    { id: question.option_3_id, text: question.option_3 },
+                    { id: question.option_4_id, text: question.option_4 },
+                ];
+
+                options.forEach(option => {
+                    const optionElement = document.createElement('div');
+                    optionElement.classList.add('option');
+                    optionElement.textContent = option.text;
+                    if (option.id === question.correct_answer) {
+                        optionElement.classList.add('correct');
+                    } 
+                     if(option.id=== question.choosed_option)
+                    {
+                        optionElement.classList.add('selected');
+                    }
+
+                    questionElement.appendChild(optionElement);
+                });
+
+                quizResultElement.appendChild(questionElement);
+            });
+
+            const scoreElement = document.createElement('div');
+            scoreElement.classList.add('score');
+            scoreElement.textContent = `Score: ${quizData.score}`;
+            quizResultElement.appendChild(scoreElement);
+        }
+
+        // Function to display a message when the user has not attempted the quiz
+        function displayNoQuizAttempt(message) {
+            const quizResultElement = document.getElementById('quiz-result');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('score');
+            messageElement.textContent = message;
+            quizResultElement.appendChild(messageElement);
+        }
+
+        // Function to display an error message
+        function displayError(message) {
+            const quizResultElement = document.getElementById('quiz-result');
+            const errorElement = document.createElement('div');
+            errorElement.classList.add('score');
+            errorElement.textContent = message;
+            quizResultElement.appendChild(errorElement);
+        }</script>
+</body>
+
+</html> 
